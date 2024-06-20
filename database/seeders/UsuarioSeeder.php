@@ -18,6 +18,19 @@ class UsuarioSeeder extends Seeder
     public function run(): void
     {
         $usuarios = DB::connection('sigaa')->table('vw_usuarios_catraca')->get();
+        $entidadeId = '52d78c7d-e0c1-422b-b094-2ca5958d5ac1';
+
+        // Verificar se a entidade existe
+        $entidade = DB::connection('petrvs')->table('entidades')->find($entidadeId);
+        if (!$entidade) {
+            DB::connection('petrvs')->table('entidades')->insert([
+                'id' => $entidadeId,
+                'nome' => 'Nome da Entidade', // Coloque o nome apropriado
+                'sigla' => 'ENT', // Coloque a sigla apropriada
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         // Conectar ao banco MySQL e inserir os dados
         foreach ($usuarios as $usuario) {
@@ -30,10 +43,30 @@ class UsuarioSeeder extends Seeder
                     'id' => $guidUnidade,
                 ],
                 [
-                    'nome' => $usuario->descricao_unidade,
-                    'sigla' => $usuario->sigla_unidade,
                     'created_at' => now(),
                     'updated_at' => now(),
+                    'deleted_at' => NULL,
+                    'codigo' => '1',
+                    'sigla' => 'MGI',
+                    'nome' => 'Ministério da Gestão e da Inovação em Serviços Públicos',
+                    'instituidora' => 1,
+                    'path' => NULL,
+                    'texto_complementar_plano' => NULL,
+                    'atividades_arquivamento_automatico' => 0,
+                    'atividades_avaliacao_automatico' => 0,
+                    'planos_prazo_comparecimento' => 10,
+                    'planos_tipo_prazo_comparecimento' => 'DIAS',
+                    'data_inativacao' => NULL,
+                    'distribuicao_forma_contagem_prazos' => 'DIAS_UTEIS',
+                    'entrega_forma_contagem_prazos' => 'HORAS_UTEIS',
+                    'autoedicao_subordinadas' => 1,
+                    'etiquetas' => NULL,
+                    'checklist' => NULL,
+                    'notificacoes' => NULL,
+                    'expediente' => NULL,
+                    'cidade_id' =>  '0f8264d0-acea-8733-df5a-891544a1bf64',
+                    'unidade_pai_id' => NULL,
+                    'entidade_id' => $entidadeId,
                 ]
             );
 
@@ -51,7 +84,19 @@ class UsuarioSeeder extends Seeder
                     'apelido' => $usuario->login,
                     'perfil_id' => '5bdc583a-d0f4-7e03-401e-939cefa4df6e',
                     'situacao_funcional' => 'ATIVO_PERMANENTE',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+
+            // Inserir ou atualizar a associação na tabela unidades_integrantes
+            DB::connection('petrvs')->table('unidades_integrantes')->updateOrInsert(
+                [
+                    'usuario_id' => $guidUsuario,
                     'unidade_id' => $guidUnidade,
+                ],
+                [
+                    'id' => $guidUsuario, // Usando o guid do usuário como o id da associação
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
