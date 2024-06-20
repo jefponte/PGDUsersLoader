@@ -20,24 +20,24 @@ class UsuarioSeeder extends Seeder
         $usuarios = DB::connection('sigaa')->table('vw_usuarios_catraca')->get();
         $entidadeId = '52d78c7d-e0c1-422b-b094-2ca5958d5ac1';
 
-        // Verificar se a entidade existe
+
         $entidade = DB::connection('petrvs')->table('entidades')->find($entidadeId);
         if (!$entidade) {
             DB::connection('petrvs')->table('entidades')->insert([
                 'id' => $entidadeId,
-                'nome' => 'Nome da Entidade', // Coloque o nome apropriado
-                'sigla' => 'ENT', // Coloque a sigla apropriada
+                'nome' => 'Nome da Entidade',
+                'sigla' => 'ENT',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
 
-        // Conectar ao banco MySQL e inserir os dados
+
         foreach ($usuarios as $usuario) {
             $guidUsuario = $this->generateGuid($usuario->id_usuario);
             $guidUnidade = $this->generateGuid($usuario->id_unidade);
 
-            // Inserir ou atualizar a unidade
+
             Unidade::updateOrCreate(
                 [
                     'id' => $guidUnidade,
@@ -70,7 +70,6 @@ class UsuarioSeeder extends Seeder
                 ]
             );
 
-            // Inserir ou atualizar o usuário
             Usuario::updateOrCreate(
                 [
                     'email' => $usuario->email,
@@ -89,14 +88,13 @@ class UsuarioSeeder extends Seeder
                 ]
             );
 
-            // Inserir ou atualizar a associação na tabela unidades_integrantes
             DB::connection('petrvs')->table('unidades_integrantes')->updateOrInsert(
                 [
                     'usuario_id' => $guidUsuario,
                     'unidade_id' => $guidUnidade,
                 ],
                 [
-                    'id' => $guidUsuario, // Usando o guid do usuário como o id da associação
+                    'id' => $guidUsuario,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
@@ -109,7 +107,6 @@ class UsuarioSeeder extends Seeder
      */
     private function generateGuid($id)
     {
-        // Aqui estamos gerando um UUID aleatório e ajustando ele com base no id
         $uuid = (string) Str::uuid();
         $hash = substr(md5($id), 0, 8);
         $guid = substr($uuid, 0, 28) . $hash;
