@@ -92,6 +92,32 @@ return [
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
+        'petrvs' => [
+            'driver' => 'mysql',
+            'host' => env('DB_PETRVS_HOST', '127.0.0.1'),
+            'port' => env('DB_PETRVS_PORT', '3306'),
+            'database' => env('DB_PETRVS_DATABASE', 'laravel'),
+            'username' => env('DB_PETRVS_USERNAME', 'root'),
+            'password' => env('DB_PETRVS_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
+        'sigaa' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_SIGAA_HOST', 'localhost'),
+            'port' => env('DB_SIGAA_PORT', '5432'),
+            'database' => env('DB_SIGAA_DATABASE', 'app-3s'),
+            'username' => env('DB_SIGAA_USERNAME', 'postgres'),
+            'password' => env('DB_SIGAA_PASSWORD', 'cocacola@123A'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
 
     ],
 
