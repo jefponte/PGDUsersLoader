@@ -9,20 +9,17 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\Usuario;
 use App\Models\Unidade;
+use App\Models\Perfil;
 
 class UsuarioSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $usuarios = DB::connection('sigaa')->table('vw_usuarios_catraca')->get();
-        $entidadeId = '52d78c7d-e0c1-422b-b094-2ca5958d5ac1';
 
-
-        $entidade = DB::connection('petrvs')->table('entidades')->find($entidadeId);
+        $entidade = DB::connection('petrvs')->table('entidades')->first();
         if (!$entidade) {
+            $entidadeId = '52d78c7d-e0c1-422b-b094-2ca5958d5ac1';
             DB::connection('petrvs')->table('entidades')->insert([
                 'id' => $entidadeId,
                 'nome' => 'Nome da Entidade',
@@ -30,13 +27,16 @@ class UsuarioSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+            $entidade = (object) [
+                'id' => $entidadeId
+            ];
         }
 
+        $perfis = Perfil::all();
 
         foreach ($usuarios as $usuario) {
             $guidUsuario = $this->generateGuid($usuario->id_usuario);
             $guidUnidade = $this->generateGuid($usuario->id_unidade);
-
 
             Unidade::updateOrCreate(
                 [
@@ -66,7 +66,7 @@ class UsuarioSeeder extends Seeder
                     'expediente' => NULL,
                     'cidade_id' =>  '0f8264d0-acea-8733-df5a-891544a1bf64',
                     'unidade_pai_id' => NULL,
-                    'entidade_id' => $entidadeId,
+                    'entidade_id' => $entidade->id,
                 ]
             );
 
@@ -81,7 +81,7 @@ class UsuarioSeeder extends Seeder
                     'cpf' => $usuario->cpf_cnpj,
                     'matricula' => $usuario->matricula_disc,
                     'apelido' => $usuario->login,
-                    'perfil_id' => 'e4da3b7f-bbce-2345-d777-2b0674a318d5',
+                    'perfil_id' => $perfis->where('nome', 'Perfil Participante')->first()->id,
                     'situacao_funcional' => 'ATIVO_PERMANENTE',
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -102,12 +102,10 @@ class UsuarioSeeder extends Seeder
         }
     }
 
-    /**
-     * Generate a GUID based on id.
-     */
     private function generateGuid($id)
     {
         $hash = md5($id);
+
         $guid = substr($hash, 0, 8) . '-' .
                 substr($hash, 8, 4) . '-' .
                 substr($hash, 12, 4) . '-' .
