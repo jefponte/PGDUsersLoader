@@ -26,8 +26,15 @@ O usuário do sigaa deverá ter acesso à vw_usuarios_catraca.
         DB_SIGAA_PASSWORD=cocacola@123A
 
 
-Dentro da pasta raiz,
+Dentro da pasta raiz execute:
 
-composer install
+        composer install
+        php artisan db:seed
 
-php artisan db:seed
+Espera-se um retorno parecido com este:
+
+
+        INFO  Seeding database.
+
+        Database\Seeders\UsuarioSeeder ........................................................................................................... RUNNING
+        Database\Seeders\UsuarioSeeder ........................................................................................................ 69 ms DONE

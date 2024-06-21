@@ -15,7 +15,7 @@ class UsuarioSeeder extends Seeder
 {
     public function run(): void
     {
-        $usuarios = DB::connection('sigaa')->table('vw_usuarios_catraca')->get();
+        $usuarios = DB::connection('sigaa')->table('vw_usuarios_catraca')->where('id_status_servidor', 1)->get();
 
         $entidade = DB::connection('petrvs')->table('entidades')->first();
         if (!$entidade) {
@@ -27,9 +27,7 @@ class UsuarioSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-            $entidade = (object) [
-                'id' => $entidadeId
-            ];
+            $entidade = (object) ['id' => $entidadeId];
         }
 
         $perfis = Perfil::all();
@@ -37,11 +35,10 @@ class UsuarioSeeder extends Seeder
         foreach ($usuarios as $usuario) {
             $guidUsuario = $this->generateGuid($usuario->id_usuario);
             $guidUnidade = $this->generateGuid($usuario->id_unidade);
+            $cpfFormatado = str_pad($usuario->cpf_cnpj, 11, '0', STR_PAD_LEFT);
 
             Unidade::updateOrCreate(
-                [
-                    'id' => $guidUnidade,
-                ],
+                ['id' => $guidUnidade],
                 [
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -49,7 +46,8 @@ class UsuarioSeeder extends Seeder
                     'codigo' => '1',
                     'sigla' => $usuario->sigla_unidade,
                     'nome' => $usuario->descricao_unidade,
-                    'instituidora' => 1,
+                    'instituidora' => 0,
+                    'informal' => 0,
                     'path' => NULL,
                     'texto_complementar_plano' => NULL,
                     'atividades_arquivamento_automatico' => 0,
@@ -71,14 +69,12 @@ class UsuarioSeeder extends Seeder
             );
 
             Usuario::updateOrCreate(
-                [
-                    'email' => $usuario->email,
-                ],
+                ['email' => $usuario->email],
                 [
                     'id' => $guidUsuario,
                     'nome' => $usuario->nome,
                     'password' => null,
-                    'cpf' => $usuario->cpf_cnpj,
+                    'cpf' => $cpfFormatado,
                     'matricula' => $usuario->matricula_disc,
                     'apelido' => $usuario->login,
                     'perfil_id' => $perfis->where('nome', 'Perfil Participante')->first()->id,
@@ -89,15 +85,8 @@ class UsuarioSeeder extends Seeder
             );
 
             DB::connection('petrvs')->table('unidades_integrantes')->updateOrInsert(
-                [
-                    'usuario_id' => $guidUsuario,
-                    'unidade_id' => $guidUnidade,
-                ],
-                [
-                    'id' => $guidUsuario,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
+                ['usuario_id' => $guidUsuario, 'unidade_id' => $guidUnidade],
+                ['id' => $guidUsuario, 'created_at' => now(), 'updated_at' => now()]
             );
         }
     }
@@ -105,13 +94,11 @@ class UsuarioSeeder extends Seeder
     private function generateGuid($id)
     {
         $hash = md5($id);
-
         $guid = substr($hash, 0, 8) . '-' .
                 substr($hash, 8, 4) . '-' .
                 substr($hash, 12, 4) . '-' .
                 substr($hash, 16, 4) . '-' .
                 substr($hash, 20, 12);
-
         return $guid;
     }
 }
