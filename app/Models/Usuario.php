@@ -23,6 +23,8 @@ class Usuario extends Model
         'apelido',
         'perfil_id',
         'situacao_funcional',
+        'descricao_unidade',
+        'sigla_unidade',
         'unidade_id',
         'created_at',
         'updated_at',

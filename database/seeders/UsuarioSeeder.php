@@ -47,8 +47,8 @@ class UsuarioSeeder extends Seeder
                     'updated_at' => now(),
                     'deleted_at' => NULL,
                     'codigo' => '1',
-                    'sigla' => 'MGI',
-                    'nome' => 'Ministério da Gestão e da Inovação em Serviços Públicos',
+                    'sigla' => $usuario->sigla_unidade,
+                    'nome' => $usuario->descricao_unidade,
                     'instituidora' => 1,
                     'path' => NULL,
                     'texto_complementar_plano' => NULL,
@@ -77,11 +77,11 @@ class UsuarioSeeder extends Seeder
                 [
                     'id' => $guidUsuario,
                     'nome' => $usuario->nome,
-                    'password' => Hash::make($usuario->senha),
+                    'password' => null,
                     'cpf' => $usuario->cpf_cnpj,
                     'matricula' => $usuario->matricula_disc,
                     'apelido' => $usuario->login,
-                    'perfil_id' => '5bdc583a-d0f4-7e03-401e-939cefa4df6e',
+                    'perfil_id' => 'e4da3b7f-bbce-2345-d777-2b0674a318d5',
                     'situacao_funcional' => 'ATIVO_PERMANENTE',
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -107,9 +107,13 @@ class UsuarioSeeder extends Seeder
      */
     private function generateGuid($id)
     {
-        $uuid = (string) Str::uuid();
-        $hash = substr(md5($id), 0, 8);
-        $guid = substr($uuid, 0, 28) . $hash;
+        $hash = md5($id);
+        $guid = substr($hash, 0, 8) . '-' .
+                substr($hash, 8, 4) . '-' .
+                substr($hash, 12, 4) . '-' .
+                substr($hash, 16, 4) . '-' .
+                substr($hash, 20, 12);
+
         return $guid;
     }
 }
