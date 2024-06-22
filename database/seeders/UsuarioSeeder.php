@@ -31,7 +31,7 @@ class UsuarioSeeder extends Seeder
         }
 
         $perfis = Perfil::all();
-
+        $cidadeRedencao = DB::connection('petrvs')->table('cidades')->where('nome', 'Redenção')->first();
         foreach ($usuarios as $usuario) {
             $guidUsuario = $this->generateGuid($usuario->id_usuario);
             $guidUnidade = $this->generateGuid($usuario->id_unidade);
@@ -62,7 +62,7 @@ class UsuarioSeeder extends Seeder
                     'checklist' => NULL,
                     'notificacoes' => NULL,
                     'expediente' => NULL,
-                    'cidade_id' =>  '16ae6e67-b993-f5f7-470f-859e4ba7e99c',
+                    'cidade_id' => $cidadeRedencao ? $cidadeRedencao->id : '16ae6e67-b993-f5f7-470f-859e4ba7e99c',
                     'unidade_pai_id' => NULL,
                     'entidade_id' => $entidade->id,
                 ]
