@@ -62,7 +62,7 @@ class UsuarioSeeder extends Seeder
                     'checklist' => NULL,
                     'notificacoes' => NULL,
                     'expediente' => NULL,
-                    'cidade_id' =>  '0f8264d0-acea-8733-df5a-891544a1bf64',
+                    'cidade_id' =>  '16ae6e67-b993-f5f7-470f-859e4ba7e99c',
                     'unidade_pai_id' => NULL,
                     'entidade_id' => $entidade->id,
                 ]
@@ -75,7 +75,7 @@ class UsuarioSeeder extends Seeder
                     'nome' => $usuario->nome,
                     'password' => null,
                     'cpf' => $cpfFormatado,
-                    'matricula' => $usuario->matricula_disc,
+                    'matricula' => $usuario->siape,
                     'apelido' => $usuario->login,
                     'perfil_id' => $perfis->where('nome', 'Perfil Participante')->first()->id,
                     'situacao_funcional' => 'ATIVO_PERMANENTE',
@@ -85,8 +85,23 @@ class UsuarioSeeder extends Seeder
             );
 
             DB::connection('petrvs')->table('unidades_integrantes')->updateOrInsert(
-                ['usuario_id' => $guidUsuario, 'unidade_id' => $guidUnidade],
-                ['id' => $guidUsuario, 'created_at' => now(), 'updated_at' => now()]
+                ['usuario_id' => $guidUsuario],
+                [
+                    'id' => $guidUsuario,
+                    'unidade_id' => $guidUnidade,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            );
+
+            DB::connection('petrvs')->table('unidades_integrantes_atribuicoes')->updateOrInsert(
+                ['unidade_integrante_id' => $guidUsuario],
+                [
+                    'id' => $guidUsuario,
+                    'atribuicao' => 'LOTADO',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
             );
         }
     }
@@ -101,4 +116,5 @@ class UsuarioSeeder extends Seeder
                 substr($hash, 20, 12);
         return $guid;
     }
+
 }
